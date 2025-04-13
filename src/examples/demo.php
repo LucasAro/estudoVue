@@ -1,9 +1,11 @@
 <?php
-// Carrega os arquivos de componentes
-require_once 'Button.php';
-require_once 'Popup.php';
-require_once 'ComponentsLoader.php';
+require_once '../autoLoad.php';
 
+// Importa as classes com namespace
+use PhpVue\Components\Button;
+use PhpVue\Components\Popup;
+use PhpVue\Components\Input;
+use PhpVue\Core\ComponentsLoader;
 // Carrega os componentes que serão usados na página
 ComponentsLoader::load(['Button', 'Popup']);
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace PhpVue\Components;
+
 /**
  * Popup.php - Componente Vue Popup transformado em PHP
  */

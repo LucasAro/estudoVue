@@ -1,4 +1,6 @@
 <?php
+namespace PhpVue\Components;
+
 /**
  * Input.php - Componente Vue Input com label opcional e botão de limpar
  */

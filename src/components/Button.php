@@ -1,4 +1,6 @@
 <?php
+namespace PhpVue\Components;
+
 /**
  * Button.php - Componente Vue Button transformado em PHP
  */

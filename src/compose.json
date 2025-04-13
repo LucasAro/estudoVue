@@ -1,0 +1,20 @@
+{
+	"name": "seu-nome/php-vue",
+	"description": "Integração de Vue.js em aplicações PHP legadas",
+	"type": "library",
+	"license": "MIT",
+	"authors": [
+	  {
+		"name": "Seu Nome",
+		"email": "seu.email@exemplo.com"
+	  }
+	],
+	"autoload": {
+	  "psr-4": {
+		"PhpVue\\": "src/"
+	  }
+	},
+	"require": {
+	  "php": ">=7.2.0"
+	}
+  }
