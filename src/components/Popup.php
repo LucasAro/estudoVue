@@ -4,7 +4,7 @@ namespace PhpVue\Components;
 use PhpVue\Core\BaseComponent;
 
 /**
- * Popup.php - Componente Vue Popup usando BaseComponent
+ * Popup.php - Componente Vue Popup com suporte a slots
  */
 class Popup extends BaseComponent {
     /**
@@ -79,23 +79,56 @@ class Popup extends BaseComponent {
         return <<<'TEMPLATE'
 <div v-if="showPopup" class="popup-overlay">
   <div class="popup-container">
+    <!-- Cabeçalho do popup com slot -->
     <div v-if="showTitle || showCloseButton" class="popup-header" :class="{ 'no-title': !showTitle }">
-      <h2 v-if="showTitle">{{ title }}</h2>
-      <button v-if="showCloseButton" class="close-button" @click="$emit('cancel')">&times;</button>
+      <slot name="header">
+        <h2 v-if="showTitle">{{ title }}</h2>
+      </slot>
+      <slot name="close-button">
+        <button v-if="showCloseButton" class="close-button" @click="$emit('cancel')">&times;</button>
+      </slot>
     </div>
+
+    <!-- Conteúdo do popup com slot -->
     <div class="popup-content">
-      <!-- Verifica se deve usar conteúdo HTML ou texto simples -->
-      <p v-if="!useHtmlContent">{{ message }}</p>
-      <!-- Use v-html para renderizar HTML -->
-      <div v-else v-html="htmlContent"></div>
+      <slot>
+        <!-- Conteúdo padrão se não houver slot -->
+        <p v-if="!useHtmlContent">{{ message }}</p>
+        <div v-else v-html="htmlContent"></div>
+      </slot>
     </div>
+
+    <!-- Ações do popup com slots -->
     <div v-if="showConfirmButton || showCancelButton" class="popup-actions">
-      <button v-if="showConfirmButton" class="confirm-button" @click="$emit('confirm')">{{ confirmText }}</button>
-      <button v-if="showCancelButton" class="cancel-button" @click="$emit('cancel')">{{ cancelText }}</button>
+      <slot name="actions">
+        <!-- Botões padrão se não houver slot -->
+        <slot name="confirm-button">
+          <button v-if="showConfirmButton" class="confirm-button" @click="$emit('confirm')">{{ confirmText }}</button>
+        </slot>
+        <slot name="cancel-button">
+          <button v-if="showCancelButton" class="cancel-button" @click="$emit('cancel')">{{ cancelText }}</button>
+        </slot>
+      </slot>
     </div>
   </div>
 </div>
 TEMPLATE;
+    }
+
+    /**
+     * Retorna os slots que o componente suporta
+     *
+     * @return array
+     */
+    protected static function getSlots() {
+        return [
+            'default' => 'Conteúdo principal do popup. Substitui o conteúdo padrão.',
+            'header' => 'Cabeçalho personalizado. Substitui o título padrão.',
+            'close-button' => 'Botão de fechar personalizado.',
+            'actions' => 'Área de ações personalizada. Substitui os botões padrão.',
+            'confirm-button' => 'Botão de confirmação personalizado.',
+            'cancel-button' => 'Botão de cancelamento personalizado.'
+        ];
     }
 
     /**

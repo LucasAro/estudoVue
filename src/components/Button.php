@@ -4,7 +4,7 @@ namespace PhpVue\Components;
 use PhpVue\Core\BaseComponent;
 
 /**
- * Componente Vue Button
+ * Componente Vue Button com suporte a slots
  */
 class Button extends BaseComponent {
     /**
@@ -63,9 +63,24 @@ class Button extends BaseComponent {
     :disabled="disabled || loading"
     @click="$emit('click', $event)"
 >
+    <!-- Slot para ícone esquerdo personalizado -->
+    <slot name="left-icon" v-if="!loading && !leftIcon">
+        <!-- Conteúdo padrão se não houver slot -->
+        <i v-if="leftIcon && !loading" :class="'fas fa-' + leftIcon" class="left-icon"></i>
+    </slot>
     <i v-if="leftIcon && !loading" :class="'fas fa-' + leftIcon" class="left-icon"></i>
     <i v-if="loading" class="fas fa-spinner fa-spin left-icon"></i>
-    <span class="text">{{ text }}</span>
+
+    <!-- Slot padrão substitui o texto padrão -->
+    <slot>
+        <span class="text">{{ text }}</span>
+    </slot>
+
+    <!-- Slot para ícone direito personalizado -->
+    <slot name="right-icon" v-if="!loading && !rightIcon">
+        <!-- Conteúdo padrão se não houver slot -->
+        <i v-if="rightIcon && !loading" :class="'fas fa-' + rightIcon" class="right-icon"></i>
+    </slot>
     <i v-if="rightIcon && !loading" :class="'fas fa-' + rightIcon" class="right-icon"></i>
 </button>
 TEMPLATE;
@@ -78,6 +93,19 @@ TEMPLATE;
      */
     protected static function getEmits() {
         return ['click'];
+    }
+
+    /**
+     * Retorna os slots que o componente suporta
+     *
+     * @return array
+     */
+    protected static function getSlots() {
+        return [
+            'default' => 'Conteúdo principal do botão. Substitui o texto padrão.',
+            'left-icon' => 'Ícone personalizado à esquerda do texto. Só é renderizado se leftIcon não for definido.',
+            'right-icon' => 'Ícone personalizado à direita do texto. Só é renderizado se rightIcon não for definido.'
+        ];
     }
 
     /**

@@ -63,6 +63,15 @@ abstract class BaseComponent {
     }
 
     /**
+     * Retorna os slots que o componente suporta
+     *
+     * @return array Formato: ['nome-do-slot' => 'descrição do slot', 'default' => 'slot padrão']
+     */
+    protected static function getSlots() {
+        return [];
+    }
+
+    /**
      * Renderiza o componente Vue completo
      *
      * @return string Código JavaScript do componente Vue
@@ -80,6 +89,7 @@ abstract class BaseComponent {
         $methods = static::renderMethods();
         $styles = static::getStyles();
         $emits = static::renderEmits();
+        $slots = static::renderSlots();
 
         // Importante: A formatação precisa corresponder exatamente à formatação original
         $output = <<<EOT
@@ -97,6 +107,9 @@ export const {$name} = {
         {$computed}
     }
 };
+
+// Documentação dos slots disponíveis
+{$name}.slots = {$slots};
 
 // Estilos do componente
 export const {$styleFunction} = () => {
@@ -155,6 +168,27 @@ EOT;
         }
 
         return implode(",\n        ", $result);
+    }
+
+    /**
+     * Renderiza informações sobre slots no formato JavaScript
+     *
+     * @return string
+     */
+    protected static function renderSlots() {
+        $slots = static::getSlots();
+
+        if (empty($slots)) {
+            return '{}';
+        }
+
+        $result = [];
+
+        foreach ($slots as $name => $description) {
+            $result[] = "'$name': '$description'";
+        }
+
+        return "{\n    " . implode(",\n    ", $result) . "\n}";
     }
 
     /**

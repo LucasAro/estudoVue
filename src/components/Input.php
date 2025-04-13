@@ -4,7 +4,7 @@ namespace PhpVue\Components;
 use PhpVue\Core\BaseComponent;
 
 /**
- * Input.php - Componente Vue Input com label opcional e botão de limpar
+ * Input.php - Componente Vue Input com label opcional, botão de limpar e slots
  */
 class Input extends BaseComponent {
     /**
@@ -49,7 +49,6 @@ class Input extends BaseComponent {
             ],
             'id' => [
                 'type' => 'String',
-                // Corrigido: Usando sintaxe de string simples
                 'default' => '() => `input-${Math.random().toString(36).substring(2, 9)}`'
             ],
             'showClearButton' => [
@@ -67,32 +66,68 @@ class Input extends BaseComponent {
     protected static function getTemplate() {
         return <<<'TEMPLATE'
 <div class="vue-input-wrapper">
-    <label v-if="label" :for="id" class="vue-input-label">
-        {{ label }}
-        <span v-if="required" class="required-mark">*</span>
-    </label>
+    <!-- Slot para label personalizado -->
+    <slot name="label">
+        <label v-if="label" :for="id" class="vue-input-label">
+            {{ label }}
+            <span v-if="required" class="required-mark">*</span>
+        </label>
+    </slot>
+
     <div class="vue-input-container">
-        <input
-            :id="id"
-            :type="type"
-            :value="modelValue"
-            :placeholder="placeholder"
-            :disabled="disabled"
-            class="vue-input"
-            @input="$emit('update:modelValue', $event.target.value)"
-        />
-        <button
-            v-if="showClearButton && modelValue && !disabled"
-            type="button"
-            class="clear-button"
-            @click="clearInput"
-            title="Limpar"
-        >
-            <i class="fas fa-times"></i>
-        </button>
+        <!-- Slot para conteúdo antes do input -->
+        <slot name="prefix"></slot>
+
+        <!-- Slot para substituir completamente o input -->
+        <slot name="input">
+            <input
+                :id="id"
+                :type="type"
+                :value="modelValue"
+                :placeholder="placeholder"
+                :disabled="disabled"
+                class="vue-input"
+                @input="$emit('update:modelValue', $event.target.value)"
+            />
+        </slot>
+
+        <!-- Slot para botão de limpar personalizado -->
+        <slot name="clear-button">
+            <button
+                v-if="showClearButton && modelValue && !disabled"
+                type="button"
+                class="clear-button"
+                @click="clearInput"
+                title="Limpar"
+            >
+                <i class="fas fa-times"></i>
+            </button>
+        </slot>
+
+        <!-- Slot para conteúdo após o input -->
+        <slot name="suffix"></slot>
     </div>
+
+    <!-- Slot para conteúdo abaixo do input (mensagens, etc) -->
+    <slot name="helper"></slot>
 </div>
 TEMPLATE;
+    }
+
+    /**
+     * Retorna os slots que o componente suporta
+     *
+     * @return array
+     */
+    protected static function getSlots() {
+        return [
+            'label' => 'Substitui o label padrão do input.',
+            'prefix' => 'Conteúdo a ser exibido antes do campo de input (ícones, etc).',
+            'input' => 'Substitui o campo de input padrão completamente.',
+            'clear-button' => 'Substitui o botão de limpar padrão.',
+            'suffix' => 'Conteúdo a ser exibido após o campo de input (ícones, unidades, etc).',
+            'helper' => 'Conteúdo a ser exibido abaixo do input (textos de ajuda, mensagens de erro, etc).'
+        ];
     }
 
     /**
