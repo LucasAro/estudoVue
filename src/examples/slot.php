@@ -245,39 +245,28 @@ ComponentsLoader::load([Button::class, Popup::class, Input::class]);
 
     <!-- Script que carrega os componentes do PHP -->
     <script type="module">
-        <?php echo ComponentsLoader::renderComponents(); ?>
+        <?php echo ComponentsLoader::renderVueApp('slotsApp'); ?>
 
-        // Aplica os estilos dos componentes
-        applyButtonStyles();
-        applyPopupStyles();
-        applyInputStyles();
+        // Personalização da aplicação Vue
+        slotsApp.config.globalProperties = {
+            ...slotsApp.config.globalProperties,
 
-        // Cria a aplicação Vue
-        const { createApp, ref, computed } = Vue;
-
-        createApp({
-            components: {
-                VueButton,
-                VuePopup,
-                VueInput
+            // Estado para input de email
+            email: Vue.ref(''),
+            get isValidEmail() {
+                if (!this.email.value) return true;
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(this.email.value);
             },
-            setup() {
-                // Estado para input de email
-                const email = ref('');
-                const isValidEmail = computed(() => {
-                    if (!email.value) return true;
-                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                    return emailRegex.test(email.value);
-                });
 
-                // Estado para input de username
-                const username = ref('');
+            // Estado para input de username
+            username: Vue.ref(''),
 
-                // Estado para popup
-                const customPopup = ref(false);
+            // Estado para popup
+            customPopup: Vue.ref(false),
 
-                // Código de exemplo para mostrar no popup
-                const slotExample = ref(`<vue-popup>
+            // Código de exemplo para mostrar no popup
+            slotExample: Vue.ref(`<vue-popup>
   <template v-slot:header>
     <div>Header personalizado</div>
   </template>
@@ -287,24 +276,14 @@ ComponentsLoader::load([Button::class, Popup::class, Input::class]);
   <template v-slot:actions>
     <button>Botões personalizados</button>
   </template>
-</vue-popup>`);
+</vue-popup>`),
 
-                // Métodos
-                function handleConfirm() {
-                    customPopup.value = false;
-                    alert('Ação confirmada!');
-                }
-
-                return {
-                    email,
-                    isValidEmail,
-                    username,
-                    customPopup,
-                    slotExample,
-                    handleConfirm
-                };
+            // Métodos
+            handleConfirm() {
+                this.customPopup.value = false;
+                alert('Ação confirmada!');
             }
-        }).mount('#app');
+        };
     </script>
 </body>
 </html>

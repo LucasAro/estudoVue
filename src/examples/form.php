@@ -177,109 +177,81 @@ ComponentsLoader::load([Button::class, Popup::class, Input::class]);
 
     <!-- Script que carrega os componentes do PHP -->
     <script type="module">
-        <?php echo ComponentsLoader::renderComponents(); ?>
+        <?php
+        // Renderiza a aplicação Vue com todos os componentes automaticamente
+        echo ComponentsLoader::renderVueApp('formApp');
+        ?>
 
-        // Aplica os estilos dos componentes
-        applyButtonStyles();
-        applyPopupStyles();
-        applyInputStyles();
+        // Personalização da aplicação Vue
+        formApp.config.globalProperties = {
+            ...formApp.config.globalProperties,
 
-        // Cria a aplicação Vue
-        const { createApp, ref, computed } = Vue;
+            // Dados do formulário
+            nome: Vue.ref(''),
+            email: Vue.ref(''),
+            telefone: Vue.ref(''),
+            codigo: Vue.ref(''),
+            mensagem: Vue.ref(''),
+            campoDesabilitado: Vue.ref('Valor fixo'),
 
-        createApp({
-            components: {
-                VueButton,
-                VuePopup,
-                VueInput
+            // Estados
+            showPopup: Vue.ref(false),
+            isLoading: Vue.ref(false),
+
+            // Conteúdo HTML para o popup
+            popupContent: Vue.computed(() => {
+                return `
+                    <div style="text-align: left;">
+                        <p><strong>Nome:</strong> ${formApp.config.globalProperties.nome.value || '(não preenchido)'}</p>
+                        <p><strong>Email:</strong> ${formApp.config.globalProperties.email.value || '(não preenchido)'}</p>
+                        <p><strong>Telefone:</strong> ${formApp.config.globalProperties.telefone.value || '(não preenchido)'}</p>
+                        <p><strong>Código:</strong> ${formApp.config.globalProperties.codigo.value ? '********' : '(não preenchido)'}</p>
+                        <p><strong>Mensagem:</strong> ${formApp.config.globalProperties.mensagem.value || '(não preenchido)'}</p>
+                    </div>
+                `;
+            }),
+
+            // Funções
+            toggleLoading() {
+                this.isLoading.value = true;
+
+                // Simula uma operação que demora 2 segundos
+                setTimeout(() => {
+                    this.isLoading.value = false;
+                    alert('Operação concluída!');
+                }, 2000);
             },
-            setup() {
-                // Dados do formulário
-                const nome = ref('');
-                const email = ref('');
-                const telefone = ref('');
-                const codigo = ref('');
-                const mensagem = ref('');
-                const campoDesabilitado = ref('Valor fixo');
 
-                // Estados
-                const showPopup = ref(false);
-                const isLoading = ref(false);
+            limparForm() {
+                this.nome.value = '';
+                this.email.value = '';
+                this.telefone.value = '';
+                this.codigo.value = '';
+                this.mensagem.value = '';
+            },
 
-                // Conteúdo HTML para o popup
-                const popupContent = computed(() => {
-                    return `
-                        <div style="text-align: left;">
-                            <p><strong>Nome:</strong> ${nome.value || '(não preenchido)'}</p>
-                            <p><strong>Email:</strong> ${email.value || '(não preenchido)'}</p>
-                            <p><strong>Telefone:</strong> ${telefone.value || '(não preenchido)'}</p>
-                            <p><strong>Código:</strong> ${codigo.value ? '********' : '(não preenchido)'}</p>
-                            <p><strong>Mensagem:</strong> ${mensagem.value || '(não preenchido)'}</p>
-                        </div>
-                    `;
-                });
+            confirmarPopup() {
+                this.showPopup.value = false;
+                alert('Informações confirmadas!');
+            },
 
-                // Funções
-                function toggleLoading() {
-                    isLoading.value = true;
+            // Handlers para os eventos de clear dos componentes
+            handleNomeClear() {
+                console.log('Nome foi limpo');
+            },
 
-                    // Simula uma operação que demora 2 segundos
-                    setTimeout(() => {
-                        isLoading.value = false;
-                        alert('Operação concluída!');
-                    }, 2000);
-                }
+            handleEmailClear() {
+                console.log('Email foi limpo');
+            },
 
-                function limparForm() {
-                    nome.value = '';
-                    email.value = '';
-                    telefone.value = '';
-                    codigo.value = '';
-                    mensagem.value = '';
-                }
+            handleTelefoneClear() {
+                console.log('Telefone foi limpo');
+            },
 
-                function confirmarPopup() {
-                    showPopup.value = false;
-                    alert('Informações confirmadas!');
-                }
-
-                // Handlers para os eventos de clear dos componentes
-                function handleNomeClear() {
-                    console.log('Nome foi limpo');
-                }
-
-                function handleEmailClear() {
-                    console.log('Email foi limpo');
-                }
-
-                function handleTelefoneClear() {
-                    console.log('Telefone foi limpo');
-                }
-
-                function handleMensagemClear() {
-                    console.log('Mensagem foi limpa');
-                }
-
-                return {
-                    nome,
-                    email,
-                    telefone,
-                    codigo,
-                    mensagem,
-                    campoDesabilitado,
-                    showPopup,
-                    isLoading,
-                    popupContent,
-                    toggleLoading,
-                    limparForm,
-                    confirmarPopup,
-                    handleNomeClear,
-                    handleEmailClear,
-                    handleTelefoneClear,
-                    handleMensagemClear
-                };
+            handleMensagemClear() {
+                console.log('Mensagem foi limpa');
             }
-        }).mount('#app');
+        };
     </script>
 </body>
 </html>

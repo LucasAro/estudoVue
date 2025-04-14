@@ -64,4 +64,67 @@ class ComponentsLoader {
 
         return $output;
     }
+
+    /**
+     * Renderiza os componentes e gera o script necessário para aplicar estilos e registrar componentes
+     *
+     * @param string $appName Nome da variável da aplicação Vue (padrão: 'app')
+     * @param string $mountElement Seletor do elemento onde a aplicação será montada (padrão: '#app')
+     * @return string Código JavaScript completo incluindo componentes, estilos e inicialização
+     */
+    public static function renderVueApp($appName = 'app', $mountElement = '#app') {
+        // Obtém o código de todos os componentes
+        $componentsCode = self::renderComponents();
+
+        // Lista de nomes de componentes e funções de estilo
+        $componentNames = [];
+        $stylesFunctions = [];
+
+        foreach (self::$loadedComponents as $component) {
+            if (class_exists($component) && method_exists($component, 'getName')) {
+                $name = call_user_func([$component, 'getName']);
+                $componentNames[] = $name;
+
+                // Determina o nome da função de estilo
+                $className = (strpos($name, 'Vue') === 0) ? substr($name, 3) : $name;
+                $styleFunction = 'apply' . $className . 'Styles';
+                $stylesFunctions[] = $styleFunction;
+            }
+        }
+
+        // Gera o código para registrar a aplicação Vue
+        $componentsListStr = implode(",\n            ", $componentNames);
+        $stylesStr = implode("();\n    ", $stylesFunctions) . "();";
+
+        $vueAppCode = <<<EOT
+// Componentes PhpVue
+$componentsCode
+
+// Aplicar estilos para todos os componentes
+const applyAllStyles = () => {
+    $stylesStr
+};
+
+// Aplicar estilos
+applyAllStyles();
+
+// Criar aplicação Vue
+const { createApp, ref, computed, reactive, watch, onMounted } = Vue;
+
+// Componentes registrados
+const components = {
+            $componentsListStr
+        };
+
+// Criar e montar aplicação
+const $appName = createApp({
+    components
+}).mount('$mountElement');
+
+// Expor a aplicação globalmente (opcional)
+window.vueApp = $appName;
+EOT;
+
+        return $vueAppCode;
+    }
 }

@@ -156,84 +156,59 @@ ComponentsLoader::load(['Button', 'Popup']);
 
     <!-- Script que carrega os componentes do PHP -->
     <script type="module">
-        <?php echo ComponentsLoader::renderComponents(); ?>
+        <?php echo ComponentsLoader::renderVueApp('demoApp'); ?>
 
-        // Aplica os estilos dos componentes
-        applyButtonStyles();
-        applyPopupStyles();
+        // Personalização da aplicação Vue
+        demoApp.config.globalProperties = {
+            ...demoApp.config.globalProperties,
 
-        // Cria a aplicação Vue
-        const { createApp, ref } = Vue;
+            // Estados para gerenciar os popups
+            popupSimples: Vue.ref(false),
+            popupHtml: Vue.ref(false),
+            popupCustom: Vue.ref(false),
 
-        createApp({
-            components: {
-                VueButton,
-                VuePopup
+            // Funções para os botões
+            showMessage(message) {
+                alert(message);
             },
-            setup() {
-                // Estados para gerenciar os popups
-                const popupSimples = ref(false);
-                const popupHtml = ref(false);
-                const popupCustom = ref(false);
 
-                // Funções para os botões
-                function showMessage(message) {
-                    alert(message);
-                }
+            // Funções para o popup simples
+            openSimplePopup() {
+                this.popupSimples.value = true;
+            },
 
-                // Funções para o popup simples
-                function openSimplePopup() {
-                    popupSimples.value = true;
-                }
+            confirmSimplePopup() {
+                alert('Popup confirmado!');
+                this.closeSimplePopup();
+            },
 
-                function confirmSimplePopup() {
-                    alert('Popup confirmado!');
-                    closeSimplePopup();
-                }
+            closeSimplePopup() {
+                this.popupSimples.value = false;
+            },
 
-                function closeSimplePopup() {
-                    popupSimples.value = false;
-                }
+            // Funções para o popup com HTML
+            openHtmlPopup() {
+                this.popupHtml.value = true;
+            },
 
-                // Funções para o popup com HTML
-                function openHtmlPopup() {
-                    popupHtml.value = true;
-                }
+            closeHtmlPopup() {
+                this.popupHtml.value = false;
+            },
 
-                function closeHtmlPopup() {
-                    popupHtml.value = false;
-                }
+            // Funções para o popup personalizado
+            openCustomPopup() {
+                this.popupCustom.value = true;
+            },
 
-                // Funções para o popup personalizado
-                function openCustomPopup() {
-                    popupCustom.value = true;
-                }
+            confirmCustomPopup() {
+                alert('Configurações salvas!');
+                this.closeCustomPopup();
+            },
 
-                function confirmCustomPopup() {
-                    alert('Configurações salvas!');
-                    closeCustomPopup();
-                }
-
-                function closeCustomPopup() {
-                    popupCustom.value = false;
-                }
-
-                return {
-                    showMessage,
-                    popupSimples,
-                    popupHtml,
-                    popupCustom,
-                    openSimplePopup,
-                    confirmSimplePopup,
-                    closeSimplePopup,
-                    openHtmlPopup,
-                    closeHtmlPopup,
-                    openCustomPopup,
-                    confirmCustomPopup,
-                    closeCustomPopup
-                };
+            closeCustomPopup() {
+                this.popupCustom.value = false;
             }
-        }).mount('#app');
+        };
     </script>
 </body>
 </html>
