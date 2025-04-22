@@ -1,4 +1,5 @@
 <?php
+#demo.php
 require_once '../autoLoad.php';
 
 // Importa as classes com namespace
@@ -156,59 +157,82 @@ ComponentsLoader::load(['Button', 'Popup']);
 
     <!-- Script que carrega os componentes do PHP -->
     <script type="module">
-        <?php echo ComponentsLoader::renderVueApp('demoApp'); ?>
+        <?php echo ComponentsLoader::renderVueComponents(); ?>
 
-        // Personalização da aplicação Vue
-        demoApp.config.globalProperties = {
-            ...demoApp.config.globalProperties,
+        // Criar aplicação Vue manualmente
+        const { createApp, ref, computed } = Vue;
 
-            // Estados para gerenciar os popups
-            popupSimples: Vue.ref(false),
-            popupHtml: Vue.ref(false),
-            popupCustom: Vue.ref(false),
-
-            // Funções para os botões
-            showMessage(message) {
-                alert(message);
+        // Criar e montar aplicação
+        const demoApp = createApp({
+            components: {
+                VueButton,
+                VuePopup
             },
+            setup() {
+                // Estados para gerenciar os popups
+                const popupSimples = ref(false);
+                const popupHtml = ref(false);
+                const popupCustom = ref(false);
 
-            // Funções para o popup simples
-            openSimplePopup() {
-                this.popupSimples.value = true;
-            },
+                // Funções para os botões
+                function showMessage(message) {
+                    alert(message);
+                }
 
-            confirmSimplePopup() {
-                alert('Popup confirmado!');
-                this.closeSimplePopup();
-            },
+                // Funções para o popup simples
+                function openSimplePopup() {
+                    popupSimples.value = true;
+                }
 
-            closeSimplePopup() {
-                this.popupSimples.value = false;
-            },
+                function confirmSimplePopup() {
+                    alert('Popup confirmado!');
+                    popupSimples.value = false;
+                }
 
-            // Funções para o popup com HTML
-            openHtmlPopup() {
-                this.popupHtml.value = true;
-            },
+                function closeSimplePopup() {
+                    popupSimples.value = false;
+                }
 
-            closeHtmlPopup() {
-                this.popupHtml.value = false;
-            },
+                // Funções para o popup com HTML
+                function openHtmlPopup() {
+                    popupHtml.value = true;
+                }
 
-            // Funções para o popup personalizado
-            openCustomPopup() {
-                this.popupCustom.value = true;
-            },
+                function closeHtmlPopup() {
+                    popupHtml.value = false;
+                }
 
-            confirmCustomPopup() {
-                alert('Configurações salvas!');
-                this.closeCustomPopup();
-            },
+                // Funções para o popup personalizado
+                function openCustomPopup() {
+                    popupCustom.value = true;
+                }
 
-            closeCustomPopup() {
-                this.popupCustom.value = false;
+                function confirmCustomPopup() {
+                    alert('Configurações salvas!');
+                    popupCustom.value = false;
+                }
+
+                function closeCustomPopup() {
+                    popupCustom.value = false;
+                }
+
+                // Retornar todos os estados e funções para o template
+                return {
+                    popupSimples,
+                    popupHtml,
+                    popupCustom,
+                    showMessage,
+                    openSimplePopup,
+                    confirmSimplePopup,
+                    closeSimplePopup,
+                    openHtmlPopup,
+                    closeHtmlPopup,
+                    openCustomPopup,
+                    confirmCustomPopup,
+                    closeCustomPopup
+                };
             }
-        };
+        }).mount('#app');
     </script>
 </body>
 </html>

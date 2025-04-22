@@ -66,13 +66,11 @@ class ComponentsLoader {
     }
 
     /**
-     * Renderiza os componentes e gera o script necessário para aplicar estilos e registrar componentes
+     * Renderiza os componentes e estilos, sem criar a aplicação Vue
      *
-     * @param string $appName Nome da variável da aplicação Vue (padrão: 'app')
-     * @param string $mountElement Seletor do elemento onde a aplicação será montada (padrão: '#app')
-     * @return string Código JavaScript completo incluindo componentes, estilos e inicialização
+     * @return string Código JavaScript dos componentes e funções de estilo
      */
-    public static function renderVueApp($appName = 'app', $mountElement = '#app') {
+    public static function renderVueComponents() {
         // Obtém o código de todos os componentes
         $componentsCode = self::renderComponents();
 
@@ -92,11 +90,10 @@ class ComponentsLoader {
             }
         }
 
-        // Gera o código para registrar a aplicação Vue
-        $componentsListStr = implode(",\n            ", $componentNames);
+        // Gera o código para estilos
         $stylesStr = implode("();\n    ", $stylesFunctions) . "();";
 
-        $vueAppCode = <<<EOT
+        $output = <<<EOT
 // Componentes PhpVue
 $componentsCode
 
@@ -107,24 +104,8 @@ const applyAllStyles = () => {
 
 // Aplicar estilos
 applyAllStyles();
-
-// Criar aplicação Vue
-const { createApp, ref, computed, reactive, watch, onMounted } = Vue;
-
-// Componentes registrados
-const components = {
-            $componentsListStr
-        };
-
-// Criar e montar aplicação
-const $appName = createApp({
-    components
-}).mount('$mountElement');
-
-// Expor a aplicação globalmente (opcional)
-window.vueApp = $appName;
 EOT;
 
-        return $vueAppCode;
+        return $output;
     }
 }
