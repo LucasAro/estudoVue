@@ -1,6 +1,7 @@
 <?php
 // Carrega o autoloader
 require_once '../autoLoad.php';
+require_once '../Utils/Utils.php';
 
 // Importa as classes necessárias
 use PhpVue\Components\Button;
@@ -42,7 +43,7 @@ $exampleSlots = '<vue-button @click="salvar">
 
 // Exemplo completo
 $exampleComplete = '// Carrega o componente Button
-ComponentsLoader::load([\'Button\']);
+ComponentsLoader::load([Button::class]);
 
 // No HTML
 <div id="app">
@@ -57,28 +58,49 @@ ComponentsLoader::load([\'Button\']);
 
 // Script para inicializar o Vue
 <script type="module">
-    <?php echo ComponentsLoader::renderVueApp(\'minhaApp\'); ?>
+    <?php echo ComponentsLoader::renderVueComponents(); ?>
 
-    minhaApp.config.globalProperties = {
-        // Estados
-        formValido: Vue.ref(true),
-        enviando: Vue.ref(false),
+    // Criar aplicação Vue manualmente
+    const { createApp, ref, computed } = Vue;
 
-        // Métodos
-        enviarFormulario() {
-            this.enviando.value = true;
+    // Criar e montar aplicação
+    const minhaApp = createApp({
+        components: {
+            VueButton
+        },
+        setup() {
+            // Estados
+            const formValido = ref(true);
+            const enviando = ref(false);
 
-            // Simulação de envio
-            setTimeout(() => {
-                this.enviando.value = false;
-                alert(\'Formulário enviado com sucesso!\');
-            }, 2000);
+            // Métodos
+            function enviarFormulario() {
+                enviando.value = true;
+
+                // Simulação de envio
+                setTimeout(() => {
+                    enviando.value = false;
+                    alert("Formulário enviado com sucesso!");
+                }, 2000);
+            }
+
+            return {
+                formValido,
+                enviando,
+                enviarFormulario
+            };
         }
-    };
+    }).mount("#app");
 </script>';
 
 // Exemplo CSS para personalização de estilos
-$styleExample = '/* Personalização de estilos */ .vue-button { background-color: #4CAF50; /* Verde */ color: white; border-radius: 100px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+$styleExample = '/* Personalização de estilos */
+.vue-button {
+    background-color: #4CAF50; /* Verde */
+    color: white;
+    border-radius: 100px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
 
 .vue-button:hover:not(.disabled) {
     background-color: #3e8e41;
@@ -89,18 +111,6 @@ $styleExample = '/* Personalização de estilos */ .vue-button { background-colo
     background-color: #f44336;  /* Vermelho */
 }';
 
-// Função para criar código com botão de copiar
-function createCodeBlock($code, $language = 'html') {
-    $id = 'code-' . rand(1000, 9999);
-    $html = '<div class="code-terminal">
-        <div class="code-header">
-            <span class="language-label">' . $language . '</span>
-            <button class="copy-button" onclick="copyCode(\'' . $id . '\')"><i class="fas fa-copy"></i> Copiar</button>
-        </div>
-        <pre class="code-content" id="' . $id . '">' . htmlspecialchars($code) . '</pre>
-    </div>';
-    return $html;
-}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -401,300 +411,244 @@ function createCodeBlock($code, $language = 'html') {
     </style>
 </head>
 <body>
-    <div id="app" class="container">
+    <div class="container">
         <div class="header">
             <h1>Componente Button</h1>
             <p>Documentação completa do componente Button da biblioteca PhpVue</p>
-            <a href="../index.php" class="nav-link"><i class="fas fa-arrow-left"></i> Voltar para a página inicial</a>
+            <a href="../../index.php" class="nav-link"><i class="fas fa-arrow-left"></i> Voltar para a página inicial</a>
         </div>
 
-        <div class="section">
-            <h2>Visão Geral</h2>
-            <p>O componente <code>Button</code> é um botão interativo e altamente personalizável que pode ser utilizado em formulários, modais e interfaces diversas. Ele suporta diferentes estados (normal, desabilitado, carregando), ícones, e é completamente estilizável.</p>
+        <div id="app">
+            <div class="section">
+                <h2>Visão Geral</h2>
+                <p>O componente <code>Button</code> é um botão interativo e altamente personalizável que pode ser utilizado em formulários, modais e interfaces diversas. Ele suporta diferentes estados (normal, desabilitado, carregando), ícones, e é completamente estilizável.</p>
 
-            <div class="button-demo">
-                <vue-button text="Botão Padrão"></vue-button>
-                <vue-button text="Com Ícone" left-icon="check"></vue-button>
-                <vue-button text="Cancelar" type="cancel"></vue-button>
-                <vue-button text="Carregando" :loading="true"></vue-button>
-                <vue-button text="Desabilitado" :disabled="true"></vue-button>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2>Propriedades (Props)</h2>
-            <p>O componente <code>Button</code> aceita as seguintes propriedades:</p>
-
-            <table class="props-table">
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Tipo</th>
-                        <th>Padrão</th>
-                        <th>Descrição</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>text</td>
-                        <td><span class="type-tag">String</span></td>
-                        <td>"Button"</td>
-                        <td>O texto a ser exibido no botão.</td>
-                    </tr>
-                    <tr>
-                        <td>leftIcon</td>
-                        <td><span class="type-tag">String</span></td>
-                        <td>""</td>
-                        <td>O nome do ícone do Font Awesome a ser exibido à esquerda do texto (sem o prefixo "fa-").</td>
-                    </tr>
-                    <tr>
-                        <td>rightIcon</td>
-                        <td><span class="type-tag">String</span></td>
-                        <td>""</td>
-                        <td>O nome do ícone do Font Awesome a ser exibido à direita do texto (sem o prefixo "fa-").</td>
-                    </tr>
-                    <tr>
-                        <td>disabled</td>
-                        <td><span class="type-tag">Boolean</span></td>
-                        <td>false</td>
-                        <td>Se o botão está desabilitado.</td>
-                    </tr>
-                    <tr>
-                        <td>loading</td>
-                        <td><span class="type-tag">Boolean</span></td>
-                        <td>false</td>
-                        <td>Se o botão está em estado de carregamento. Quando true, exibe um ícone de spinner e desabilita o botão.</td>
-                    </tr>
-                    <tr>
-                        <td>type</td>
-                        <td><span class="type-tag">String</span></td>
-                        <td>"default"</td>
-                        <td>O tipo do botão, afeta o estilo. Valores aceitos: "default", "cancel".</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="section">
-            <h2>Slots</h2>
-            <p>O componente <code>Button</code> suporta os seguintes slots para personalização:</p>
-
-            <table class="slots-table">
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Descrição</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>default</td>
-                        <td>Conteúdo principal do botão. Substitui o texto padrão.</td>
-                    </tr>
-                    <tr>
-                        <td>left-icon</td>
-                        <td>Ícone personalizado à esquerda do texto. Só é renderizado se leftIcon não for definido.</td>
-                    </tr>
-                    <tr>
-                        <td>right-icon</td>
-                        <td>Ícone personalizado à direita do texto. Só é renderizado se rightIcon não for definido.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="section">
-            <h2>Eventos</h2>
-            <p>O componente <code>Button</code> emite os seguintes eventos:</p>
-
-            <table class="events-table">
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Parâmetros</th>
-                        <th>Descrição</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>click</td>
-                        <td>event: MouseEvent</td>
-                        <td>Emitido quando o botão é clicado. Não é emitido se o botão estiver desabilitado ou em estado de carregamento.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="section">
-            <h2>Exemplos de Uso</h2>
-
-            <h3>Uso Básico</h3>
-            <?= createCodeBlock($exampleSimple, 'html') ?>
-            <div class="example-preview" id="example-basic">
-                <vue-button text="Clique em mim"></vue-button>
+                <div class="button-demo">
+                    <vue-button text="Botão Padrão" @click="showMessage('Botão padrão clicado!')"></vue-button>
+                    <vue-button text="Com Ícone" left-icon="check" @click="showMessage('Botão com ícone clicado!')"></vue-button>
+                    <vue-button text="Cancelar" type="cancel" @click="showMessage('Botão cancelar clicado!')"></vue-button>
+                    <vue-button text="Carregando" :loading="true"></vue-button>
+                    <vue-button text="Desabilitado" :disabled="true"></vue-button>
+                </div>
             </div>
 
-            <h3>Com Ícones</h3>
-            <?= createCodeBlock($exampleIcons, 'html') ?>
-            <div class="example-preview" id="example-icons">
-                <vue-button text="Confirmar" left-icon="check"></vue-button>
-                <vue-button text="Cancelar" type="cancel" right-icon="times"></vue-button>
+            <div class="section">
+                <h2>Propriedades (Props)</h2>
+                <p>O componente <code>Button</code> aceita as seguintes propriedades:</p>
+
+                <table class="props-table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Tipo</th>
+                            <th>Padrão</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>text</td>
+                            <td><span class="type-tag">String</span></td>
+                            <td>"Button"</td>
+                            <td>O texto a ser exibido no botão.</td>
+                        </tr>
+                        <tr>
+                            <td>leftIcon</td>
+                            <td><span class="type-tag">String</span></td>
+                            <td>""</td>
+                            <td>O nome do ícone do Font Awesome a ser exibido à esquerda do texto (sem o prefixo "fa-").</td>
+                        </tr>
+                        <tr>
+                            <td>rightIcon</td>
+                            <td><span class="type-tag">String</span></td>
+                            <td>""</td>
+                            <td>O nome do ícone do Font Awesome a ser exibido à direita do texto (sem o prefixo "fa-").</td>
+                        </tr>
+                        <tr>
+                            <td>disabled</td>
+                            <td><span class="type-tag">Boolean</span></td>
+                            <td>false</td>
+                            <td>Se o botão está desabilitado.</td>
+                        </tr>
+                        <tr>
+                            <td>loading</td>
+                            <td><span class="type-tag">Boolean</span></td>
+                            <td>false</td>
+                            <td>Se o botão está em estado de carregamento. Quando true, exibe um ícone de spinner e desabilita o botão.</td>
+                        </tr>
+                        <tr>
+                            <td>type</td>
+                            <td><span class="type-tag">String</span></td>
+                            <td>"default"</td>
+                            <td>O tipo do botão, afeta o estilo. Valores aceitos: "default", "cancel".</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
-            <h3>Estados</h3>
-            <?= createCodeBlock($exampleStates, 'html') ?>
-            <div class="example-preview">
-                <vue-button text="Processando..." :loading="true"></vue-button>
-                <vue-button text="Indisponível" :disabled="true"></vue-button>
+            <div class="section">
+                <h2>Slots</h2>
+                <p>O componente <code>Button</code> suporta os seguintes slots para personalização:</p>
+
+                <table class="slots-table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>default</td>
+                            <td>Conteúdo principal do botão. Substitui o texto padrão.</td>
+                        </tr>
+                        <tr>
+                            <td>left-icon</td>
+                            <td>Ícone personalizado à esquerda do texto. Só é renderizado se leftIcon não for definido.</td>
+                        </tr>
+                        <tr>
+                            <td>right-icon</td>
+                            <td>Ícone personalizado à direita do texto. Só é renderizado se rightIcon não for definido.</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
-            <h3>Utilizando Slots</h3>
-            <?= createCodeBlock($exampleSlots, 'html') ?>
-            <div class="example-preview" id="example-slots">
-                <vue-button>
-                    <span>Salvar Alterações</span>
-                    <span class="badge">Novo</span>
-                </vue-button>
+            <div class="section">
+                <h2>Eventos</h2>
+                <p>O componente <code>Button</code> emite os seguintes eventos:</p>
 
-                <vue-button>
-                    <template v-slot:left-icon>
-                        <div class="custom-icon">✓</div>
-                    </template>
-                    Confirmar
-                </vue-button>
+                <table class="events-table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Parâmetros</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>click</td>
+                            <td>event: MouseEvent</td>
+                            <td>Emitido quando o botão é clicado. Não é emitido se o botão estiver desabilitado ou em estado de carregamento.</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
-            <h3>Exemplo Completo</h3>
-            <?= createCodeBlock($exampleComplete, 'html') ?>
-        </div>
+            <div class="section">
+                <h2>Exemplos de Uso</h2>
 
-        <div class="section">
-            <h2>Personalização de Estilos</h2>
-            <p>O componente <code>Button</code> vem com estilos pré-definidos, mas você pode sobrescrever os estilos CSS para personalizar a aparência. Os principais seletores CSS são:</p>
+                <h3>Uso Básico</h3>
+                <?= createCodeBlock($exampleSimple, 'html') ?>
+                <div class="example-preview" id="example-basic">
+                    <vue-button text="Clique em mim" @click="minhaFuncao"></vue-button>
+                </div>
 
-            <ul>
-                <li><code>.vue-button</code> - O elemento base do botão</li>
-                <li><code>.vue-button.disabled</code> - Estilo aplicado quando o botão está desabilitado</li>
-                <li><code>.vue-button.loading</code> - Estilo aplicado quando o botão está em estado de carregamento</li>
-                <li><code>.vue-button.cancel</code> - Estilo aplicado para o tipo "cancel"</li>
-                <li><code>.vue-button .left-icon</code> - Estilo do ícone à esquerda</li>
-                <li><code>.vue-button .right-icon</code> - Estilo do ícone à direita</li>
-            </ul>
+                <h3>Com Ícones</h3>
+                <?= createCodeBlock($exampleIcons, 'html') ?>
+                <div class="example-preview" id="example-icons">
+                    <vue-button text="Confirmar" left-icon="check" @click="confirmar"></vue-button>
+                    <vue-button text="Cancelar" type="cancel" right-icon="times" @click="cancelar"></vue-button>
+                </div>
 
-            <p>Exemplo de personalização de estilos:</p>
+                <h3>Estados</h3>
+                <?= createCodeBlock($exampleStates, 'html') ?>
+                <div class="example-preview">
+                    <vue-button text="Processando..." :loading="true"></vue-button>
+                    <vue-button text="Indisponível" :disabled="true"></vue-button>
+                </div>
 
-            <?= createCodeBlock($styleExample, 'css') ?>
-        </div>
+                <h3>Utilizando Slots</h3>
+                <?= createCodeBlock($exampleSlots, 'html') ?>
+                <div class="example-preview" id="example-slots">
+                    <vue-button @click="salvar">
+                        <span>Salvar Alterações</span>
+                        <span class="badge">Novo</span>
+                    </vue-button>
 
-        <div class="footer">
-            <p>PhpVue - Documentação do Componente Button</p>
-            <p><a href="../index.php">Voltar para a página inicial</a></p>
+                    <vue-button>
+                        <template v-slot:left-icon>
+                            <div class="custom-icon">✓</div>
+                        </template>
+                        Confirmar
+                    </vue-button>
+                </div>
+
+                <h3>Exemplo Completo</h3>
+                <?= createCodeBlock($exampleComplete, 'html') ?>
+            </div>
+
+            <div class="section">
+                <h2>Personalização de Estilos</h2>
+                <p>O componente <code>Button</code> vem com estilos pré-definidos, mas você pode sobrescrever os estilos CSS para personalizar a aparência. Os principais seletores CSS são:</p>
+
+                <ul>
+                    <li><code>.vue-button</code> - O elemento base do botão</li>
+                    <li><code>.vue-button.disabled</code> - Estilo aplicado quando o botão está desabilitado</li>
+                    <li><code>.vue-button.loading</code> - Estilo aplicado quando o botão está em estado de carregamento</li>
+                    <li><code>.vue-button.cancel</code> - Estilo aplicado para o tipo "cancel"</li>
+                    <li><code>.vue-button .left-icon</code> - Estilo do ícone à esquerda</li>
+                    <li><code>.vue-button .right-icon</code> - Estilo do ícone à direita</li>
+                </ul>
+
+                <p>Exemplo de personalização de estilos:</p>
+
+                <?= createCodeBlock($styleExample, 'css') ?>
+            </div>
+
+            <div class="footer">
+                <p>PhpVue - Documentação do Componente Button</p>
+                <p><a href="index.php">Voltar para a página de documentação</a></p>
+            </div>
         </div>
     </div>
 
     <!-- Script que carrega os componentes do PHP -->
     <script type="module">
-        <?php echo ComponentsLoader::renderVueApp('docApp'); ?>
+        <?php echo ComponentsLoader::renderVueComponents(); ?>
 
-        // Configuração para ativar funções nas demos
-        docApp.config.globalProperties = {
-            ...docApp.config.globalProperties
-        };
-    </script>
+        // Criar aplicação Vue manualmente
+        const { createApp, ref, computed } = Vue;
 
-    <!-- Script para copiar código -->
-    <script>
-        function copyCode(id) {
-            const codeElement = document.getElementById(id);
-            const text = codeElement.textContent;
+        // Criar e montar aplicação
+        createApp({
+            components: {
+                VueButton
+            },
+            setup() {
+                // Funções para demonstração
+                function showMessage(message) {
+                    alert(message);
+                }
 
-            // Criar um elemento de texto temporário
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            textarea.setAttribute('readonly', '');
-            textarea.style.position = 'absolute';
-            textarea.style.left = '-9999px';
-            document.body.appendChild(textarea);
+                function minhaFuncao() {
+                    alert('Função básica executada!');
+                }
 
-            // Selecionar o texto e copiar
-            textarea.select();
-            document.execCommand('copy');
+                function confirmar() {
+                    alert('Ação confirmada!');
+                }
 
-            // Remover o elemento temporário
-            document.body.removeChild(textarea);
+                function cancelar() {
+                    alert('Ação cancelada!');
+                }
 
-            // Feedback visual
-            const button = document.querySelector(`#${id}`).parentNode.querySelector('.copy-button');
-            const originalText = button.innerHTML;
-            button.innerHTML = '<i class="fas fa-check"></i> Copiado!';
-
-            // Restaurar texto original após 2 segundos
-            setTimeout(() => {
-                button.innerHTML = originalText;
-            }, 2000);
-        }
-
-        // Adicionando event listeners aos botões de exemplo depois que a aplicação é montada
-        document.addEventListener('DOMContentLoaded', function() {
-            // Exemplo básico
-            const basicExample = document.querySelector('#example-basic vue-button');
-            if (basicExample) {
-                basicExample.addEventListener('click', function() {
-                    alert('Botão clicado!');
-                });
-            }
-
-            // Exemplo com ícones
-            const iconButtons = document.querySelectorAll('#example-icons vue-button');
-            if (iconButtons.length >= 2) {
-                iconButtons[0].addEventListener('click', function() {
-                    alert('Confirmado!');
-                });
-                iconButtons[1].addEventListener('click', function() {
-                    alert('Cancelado!');
-                });
-            }
-
-            // Exemplo com slots
-            const slotButtons = document.querySelectorAll('#example-slots vue-button');
-            if (slotButtons.length >= 1) {
-                slotButtons[0].addEventListener('click', function() {
+                function salvar() {
                     alert('Alterações salvas!');
-                });
-                if (slotButtons.length >= 2) {
-                    slotButtons[1].addEventListener('click', function() {
-                        alert('Confirmado!');
-                    });
                 }
+
+                // Retornar todos os estados e funções
+                return {
+                    showMessage,
+                    minhaFuncao,
+                    confirmar,
+                    cancelar,
+                    salvar
+                };
             }
-
-            // Adicionando event listeners para os botões da seção de visão geral
-            const demoButtons = document.querySelectorAll('.button-demo > vue-button');
-            if (demoButtons.length > 0) {
-                // Botão padrão
-                if (demoButtons[0]) {
-                    demoButtons[0].addEventListener('click', function() {
-                        alert('Botão padrão clicado!');
-                    });
-                }
-
-                // Botão com ícone
-                if (demoButtons[1]) {
-                    demoButtons[1].addEventListener('click', function() {
-                        alert('Botão com ícone clicado!');
-                    });
-                }
-
-                // Botão cancelar
-                if (demoButtons[2]) {
-                    demoButtons[2].addEventListener('click', function() {
-                        alert('Ação cancelada!');
-                    });
-                }
-
-                // Os botões loading e disabled não precisam de listeners pois não emitem cliques
-            }
-        });
+        }).mount('#app');
     </script>
+    <script src="../Utils/Utils.js"></script>
 </body>
 </html>
