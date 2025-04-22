@@ -38,9 +38,9 @@
                 <a href="popup.php" class="view-button">Ver Documentação</a>
             </div>
             <div class="component-card">
-                <div class="component-name">VueDropdown (<code>&lt;vue-dropdown&gt;</code>)</div>
-                <div class="component-desc">Componente Vue Dropdown com suporte a slots</div>
-                <a href="dropdown.php" class="view-button">Ver Documentação</a>
+                <div class="component-name">VueDatepicker (<code>&lt;vue-datepicker&gt;</code>)</div>
+                <div class="component-desc">Datepicker.php - Componente Vue Datepicker simples e funcional</div>
+                <a href="datepicker.php" class="view-button">Ver Documentação</a>
             </div>
         </div>
     </div>

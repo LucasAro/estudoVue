@@ -9,7 +9,7 @@ use PhpVue\Tools\DocsGenerator;
 use PhpVue\Components\Button;
 use PhpVue\Components\Input;
 use PhpVue\Components\Popup;
-use PhpVue\Components\Dropdown;
+use PhpVue\Components\Datepicker;
 
 // Cria uma instância do gerador de documentação
 // Especifica a pasta onde a documentação será gerada
@@ -20,7 +20,7 @@ $docsGenerator->addComponents([
     Button::class,
     Input::class,
     Popup::class,
-	Dropdown::class,
+	Datepicker::class,
     // Adicione outros componentes aqui conforme necessário
 ]);
 
