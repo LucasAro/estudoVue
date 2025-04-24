@@ -139,7 +139,7 @@ TEMPLATE;
      */
     protected static function getMethods() {
         return [
-            'updateDate' => '{
+            'updateDate(value)' => '{
                 this.$emit("update:modelValue", value);
                 this.$emit("change", value);
             }',

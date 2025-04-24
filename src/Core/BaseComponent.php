@@ -242,13 +242,9 @@ EOT;
         $result = [];
 
         foreach ($methods as $name => $code) {
-            // Garante que os métodos são formatados corretamente
-            // Garante que não tenha a palavra function no início
-            if (strpos($name, '()') !== false) {
-                // Se o nome já tem parênteses, apenas adicione o código
+            if (preg_match('/\\(.*\\)$/', $name)) {
                 $result[] = "$name $code";
             } else {
-                // Senão, adicione os parênteses
                 $result[] = "$name() $code";
             }
         }
